@@ -1,6 +1,11 @@
 const url = require('url');
 const http = require('http');
 const path = require('path');
+const {
+  stat,
+  createReadStream,
+} = require('fs');
+
 
 const server = new http.Server();
 
@@ -11,7 +16,25 @@ server.on('request', (req, res) => {
 
   switch (req.method) {
     case 'GET':
+      if (pathname.includes('/')) {
+        res.statusCode = 400;
+        res.end();
+      } else {
+        stat(filepath, (err, stat) => {
+          if (err && err.code === 'ENOENT') {
+            res.statusCode = 404;
+            res.end();
+          } else {
+            res.writeHead(200, {'Content-Length': stat.size});
 
+            const stream = createReadStream(filepath);
+            stream.pipe(res);
+            res.on('close', () => {
+              stream.destroy();
+            });
+          }
+        });
+      }
       break;
 
     default:
