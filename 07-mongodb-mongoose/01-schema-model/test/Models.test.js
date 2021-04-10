@@ -84,7 +84,6 @@ describe('mongodb-mongoose/schema-model', () => {
 
     it('поле images имеет правильную конфигурацию', () => {
       const images = Product.schema.obj.images;
-      console.log(Product.schema.obj.images);
 
       expect(images, 'images - массив').to.be.an('array');
       expect(images[0], 'images - массив строк').to.eql(String);
